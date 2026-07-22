@@ -1,0 +1,3 @@
+<div><label class="block text-sm font-medium mb-1">Currency Code</label><input name="currency_code" maxlength="3" value="{{ old('currency_code', $rate->currency_code ?? '') }}" class="input-field" required></div>
+<div><label class="block text-sm font-medium mb-1">Rate</label><input type="number" step="0.000001" name="rate" value="{{ old('rate', $rate->rate ?? '') }}" class="input-field" required></div>
+<div><label class="block text-sm font-medium mb-1">Date</label><input type="date" name="recorded_date" value="{{ old('recorded_date', isset($rate) ? $rate->recorded_date?->format('Y-m-d') : date('Y-m-d')) }}" class="input-field" required></div>

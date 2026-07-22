@@ -1,0 +1,131 @@
+<?php
+
+return [
+    'name' => 'Universal Business Systems Platform',
+    'short_name' => 'UBSP',
+
+    'roles' => [
+        'super-admin',
+        'administrator',
+        'business-owner',
+        'manager',
+        'staff',
+        'student',
+        'tenant',
+        'customer',
+        'landlord',
+        'doctor',
+        'seller',
+        'buyer',
+        'guest',
+    ],
+
+    'module_owner_permissions' => [
+        'boarding-house' => [
+            'boarding-house.access',
+            'boarding-house.manage-properties',
+            'boarding-house.manage-bookings',
+        ],
+        'clinic' => [
+            'clinic.access',
+            'clinic.manage-patients',
+            'clinic.manage-appointments',
+        ],
+        'electronics-tracker' => ['electronics-tracker.access'],
+        'university-social' => ['university-social.access'],
+        'balanced-scorecard' => ['balanced-scorecard.access'],
+        'marketplace' => ['marketplace.access'],
+        'exchange-tracker' => ['exchange-tracker.access'],
+        'weather' => ['weather.access'],
+        'monitoring-evaluation' => ['monitoring-evaluation.access'],
+        'subscription-sharing' => ['subscription-sharing.access'],
+        'sports-league' => ['sports-league.access'],
+    ],
+
+    'module_colors' => [
+        'module-dot-indigo',
+        'module-dot-lavender',
+        'module-dot-amber',
+        'module-dot-coral',
+    ],
+
+    'modules' => [
+        'electronics-tracker' => [
+            'name' => 'Electronics Tracker',
+            'description' => 'Track computers, phones, laptops, printers, and accessories.',
+            'icon' => 'cpu-chip',
+            'color' => 'module-dot-indigo',
+            'permission' => 'electronics-tracker.access',
+        ],
+        'university-social' => [
+            'name' => 'University Social',
+            'description' => 'Campus social network with posts, events, and messaging.',
+            'icon' => 'academic-cap',
+            'color' => 'module-dot-lavender',
+            'permission' => 'university-social.access',
+        ],
+        'balanced-scorecard' => [
+            'name' => 'Balanced Scorecard',
+            'description' => 'Strategic objectives, KPIs, targets, and performance reports.',
+            'icon' => 'chart-bar',
+            'color' => 'module-dot-amber',
+            'permission' => 'balanced-scorecard.access',
+        ],
+        'marketplace' => [
+            'name' => 'Marketplace',
+            'description' => 'Buy and sell products with reviews and messaging.',
+            'icon' => 'shopping-bag',
+            'color' => 'module-dot-coral',
+            'permission' => 'marketplace.access',
+        ],
+        'boarding-house' => [
+            'name' => 'Boarding House Finder',
+            'description' => 'Find nearby boarding houses with maps and booking.',
+            'icon' => 'home-modern',
+            'color' => 'module-dot-lavender',
+            'permission' => 'boarding-house.access',
+        ],
+        'exchange-tracker' => [
+            'name' => 'Exchange & Commodity Tracker',
+            'description' => 'Exchange rates, fuel, food prices, and market trends.',
+            'icon' => 'currency-dollar',
+            'color' => 'module-dot-amber',
+            'permission' => 'exchange-tracker.access',
+        ],
+        'weather' => [
+            'name' => 'Weather Dashboard',
+            'description' => 'Forecasts, maps, and city search.',
+            'icon' => 'cloud',
+            'color' => 'module-dot-indigo',
+            'permission' => 'weather.access',
+        ],
+        'clinic' => [
+            'name' => 'Clinic Management',
+            'description' => 'Patients, appointments, records, lab, and billing.',
+            'icon' => 'heart',
+            'color' => 'module-dot-coral',
+            'permission' => 'clinic.access',
+        ],
+        'monitoring-evaluation' => [
+            'name' => 'Monitoring & Evaluation',
+            'description' => 'Projects, indicators, budgets, and evidence tracking.',
+            'icon' => 'clipboard-document-check',
+            'color' => 'module-dot-indigo',
+            'permission' => 'monitoring-evaluation.access',
+        ],
+        'subscription-sharing' => [
+            'name' => 'Subscription Sharing',
+            'description' => 'Shared subscription plans, members, and renewals.',
+            'icon' => 'share',
+            'color' => 'module-dot-lavender',
+            'permission' => 'subscription-sharing.access',
+        ],
+        'sports-league' => [
+            'name' => 'Sports League',
+            'description' => 'Leagues, teams, fixtures, standings, and statistics.',
+            'icon' => 'trophy',
+            'color' => 'module-dot-amber',
+            'permission' => 'sports-league.access',
+        ],
+    ],
+];
