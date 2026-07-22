@@ -12,51 +12,67 @@
     }
 
     .dark body {
-        @apply bg-brand-indigo-dark text-brand-cream;
+        @apply bg-brand-page-dark text-brand-cream;
     }
 }
 
 @layer components {
-    /* Surfaces — solid brand colors, no gradients */
+    /* Semantic text — solid, high contrast */
+    .text-heading {
+        @apply text-brand-indigo dark:text-brand-cream;
+    }
+
+    .text-body {
+        @apply text-brand-indigo dark:text-brand-cream;
+    }
+
+    .text-muted {
+        @apply text-brand-indigo dark:text-brand-lavender;
+    }
+
+    .text-subtle {
+        @apply text-brand-indigo dark:text-brand-lavender;
+    }
+
+    /* Surfaces — solid brand colors, no transparency */
     .surface-page {
-        @apply bg-brand-cream dark:bg-brand-indigo-dark min-h-screen;
+        @apply bg-brand-cream dark:bg-brand-page-dark min-h-screen;
     }
 
     .surface-card {
-        @apply bg-white dark:bg-brand-indigo border border-brand-lavender/40 dark:border-brand-lavender/20 rounded-3xl shadow-brand;
+        @apply bg-white dark:bg-brand-surface-dark border-2 border-brand-lavender dark:border-brand-lavender rounded-3xl shadow-brand;
     }
 
     .surface-card-hover {
-        @apply surface-card transition-all duration-300 hover:shadow-brand-lg hover:-translate-y-1;
+        @apply surface-card transition-all duration-300 hover:shadow-brand-lg hover:-translate-y-1 hover:border-brand-coral;
     }
 
     .surface-sidebar {
-        @apply bg-brand-indigo dark:bg-brand-indigo-dark border-r border-brand-indigo-dark/30;
+        @apply bg-brand-indigo dark:bg-brand-indigo-dark border-r-2 border-brand-indigo-dark;
     }
 
     .surface-header {
-        @apply bg-white/95 dark:bg-brand-indigo backdrop-blur-md border-b border-brand-lavender/30 dark:border-brand-lavender/10;
+        @apply bg-brand-cream dark:bg-brand-surface-dark border-b-2 border-brand-lavender;
     }
 
     .surface-glass {
-        @apply bg-white/90 dark:bg-brand-indigo/95 backdrop-blur-xl border border-brand-lavender/30 rounded-3xl shadow-brand;
+        @apply bg-white dark:bg-brand-surface-dark border-2 border-brand-lavender rounded-3xl shadow-brand;
     }
 
-    /* Legacy aliases */
     .glass { @apply surface-glass; }
     .glass-card { @apply surface-card-hover p-6; }
 
-    /* Buttons */
+    /* Buttons — solid fills */
     .btn-primary {
         @apply inline-flex items-center justify-center px-6 py-3 bg-brand-coral text-white font-semibold font-sans rounded-full shadow-coral transition-all duration-200 hover:brightness-110 hover:-translate-y-0.5 active:translate-y-0;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center px-6 py-3 bg-brand-indigo text-brand-cream font-semibold font-sans rounded-full transition-all duration-200 hover:bg-brand-indigo-dark hover:-translate-y-0.5;
+        @apply inline-flex items-center justify-center px-6 py-3 bg-brand-indigo text-brand-cream font-semibold font-sans rounded-full transition-all duration-200 hover:bg-brand-indigo-dark hover:-translate-y-0.5 dark:bg-brand-indigo dark:hover:bg-brand-indigo-dark;
     }
 
     .btn-ghost {
-        @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-brand-indigo dark:text-brand-cream font-semibold font-sans rounded-full border-2 border-brand-lavender transition-all duration-200 hover:bg-brand-lavender/20;
+        @apply inline-flex items-center justify-center px-6 py-3 bg-brand-cream dark:bg-brand-surface-dark text-brand-indigo dark:text-brand-cream font-semibold font-sans rounded-full border-2 border-brand-lavender transition-all duration-200 hover:border-brand-coral hover:text-brand-coral;
     }
 
     .btn-accent {
@@ -73,7 +89,7 @@
     }
 
     .sidebar-link-inactive {
-        @apply text-brand-lavender-light hover:bg-white/10 hover:text-white;
+        @apply text-brand-lavender hover:bg-brand-indigo-dark hover:text-brand-cream;
     }
 
     /* Stats & bento */
@@ -81,30 +97,38 @@
         @apply surface-card p-6 flex flex-col gap-1;
     }
 
+    .stat-card .stat-label {
+        @apply text-sm font-sans text-muted;
+    }
+
+    .stat-card .stat-value {
+        @apply text-3xl font-heading font-bold text-heading;
+    }
+
     .bento-card {
         @apply surface-card-hover p-6;
     }
 
     .bento-card-dark {
-        @apply bg-brand-indigo text-brand-cream rounded-3xl p-6 shadow-brand-lg;
+        @apply bg-brand-indigo text-brand-cream rounded-3xl p-6 shadow-brand-lg border-2 border-brand-indigo-dark;
     }
 
     .bento-card-accent {
-        @apply bg-brand-amber text-brand-indigo rounded-3xl p-6 shadow-brand;
+        @apply bg-brand-amber text-brand-indigo rounded-3xl p-6 shadow-brand border-2 border-brand-amber;
     }
 
-    /* Tags & badges */
+    /* Tags & badges — solid */
     .tag {
-        @apply px-3 py-1 rounded-full text-xs font-medium bg-brand-lavender/30 text-brand-indigo dark:bg-brand-lavender/20 dark:text-brand-cream border border-brand-lavender/50;
+        @apply px-3 py-1 rounded-full text-xs font-medium bg-brand-lavender text-brand-indigo dark:bg-brand-lavender dark:text-brand-indigo border-2 border-brand-lavender;
     }
 
     .tag-accent {
-        @apply px-3 py-1 rounded-full text-xs font-medium bg-brand-amber/30 text-brand-indigo border border-brand-amber/50;
+        @apply px-3 py-1 rounded-full text-xs font-medium bg-brand-amber text-brand-indigo border-2 border-brand-amber;
     }
 
     /* Forms */
     .input-field {
-        @apply w-full rounded-2xl border-brand-lavender/50 dark:border-brand-lavender/30 bg-white dark:bg-brand-indigo-dark text-brand-indigo dark:text-brand-cream focus:border-brand-indigo focus:ring-brand-indigo/20 font-sans;
+        @apply w-full rounded-2xl border-2 border-brand-lavender bg-white dark:bg-brand-page-dark text-brand-indigo dark:text-brand-cream focus:border-brand-coral focus:ring-brand-coral font-sans;
     }
 
     /* Module color dots */
@@ -115,15 +139,14 @@
 
     /* Alerts */
     .alert-success {
-        @apply surface-card border-l-4 border-brand-amber py-3 px-4 text-brand-indigo;
+        @apply bg-brand-amber text-brand-indigo border-2 border-brand-amber rounded-2xl py-3 px-4 font-sans;
     }
 
     .skeleton {
-        @apply animate-pulse bg-brand-lavender/40 rounded-2xl;
+        @apply animate-pulse bg-brand-lavender rounded-2xl;
     }
 
-    /* Decorative blobs for landing */
     .float-blob {
-        @apply absolute rounded-full opacity-60 pointer-events-none;
+        @apply absolute rounded-full pointer-events-none;
     }
 }

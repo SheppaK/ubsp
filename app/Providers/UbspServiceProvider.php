@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\ModuleManager;
 use App\Services\PhpMailerService;
+use App\Services\ThemeService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,6 +14,7 @@ class UbspServiceProvider extends ServiceProvider
     {
         $this->app->singleton(ModuleManager::class);
         $this->app->singleton(PhpMailerService::class);
+        $this->app->singleton(ThemeService::class);
     }
 
     public function boot(): void
@@ -22,6 +24,10 @@ class UbspServiceProvider extends ServiceProvider
         } catch (\Throwable) {
             // Database may not be migrated yet during install.
         }
+
+        View::composer(['layouts.platform', 'layouts.guest', 'welcome', 'errors.layout'], function ($view) {
+            $view->with('themeCssVars', app(ThemeService::class)->cssVariableString());
+        });
 
         View::composer('layouts.platform', function ($view) {
             if (auth()->check()) {

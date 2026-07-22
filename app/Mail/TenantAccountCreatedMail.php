@@ -32,6 +32,7 @@ class TenantAccountCreatedMail extends Mailable
         return new Content(
             view: 'emails.tenant-account-created-html',
             with: [
+                'password' => $this->plainPassword,
                 'loginUrl' => route('login'),
                 'resetUrl' => route('password.request'),
             ],

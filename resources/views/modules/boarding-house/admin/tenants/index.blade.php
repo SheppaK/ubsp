@@ -6,7 +6,14 @@
 @section('content')
 <div class="space-y-6">
     @if(session('success'))
-        <div class="bento-card p-4 border-brand-coral/30 bg-brand-coral/5 font-sans text-brand-indigo">{{ session('success') }}</div>
+        <div class="bento-card p-4 border-brand-amber bg-brand-amber font-sans text-brand-indigo">{{ session('success') }}</div>
+    @endif
+    @if(session('temp_password'))
+        <div class="bento-card p-4 border-2 border-brand-coral bg-brand-cream">
+            <p class="font-sans text-sm text-body"><strong>Temporary password (email failed):</strong></p>
+            <code class="font-mono text-lg text-brand-coral">{{ session('temp_password') }}</code>
+            <p class="font-sans text-xs text-muted mt-2">Share this with the tenant securely. They can reset it via Forgot Password.</p>
+        </div>
     @endif
 
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

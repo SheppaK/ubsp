@@ -9,6 +9,7 @@
 
         <x-brand-fonts />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('partials.theme-variables')
     </head>
     <body class="surface-page">
         <div class="float-blob w-56 h-56 bg-brand-lavender -top-10 -right-10" aria-hidden="true"></div>

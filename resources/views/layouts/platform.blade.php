@@ -4,9 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('ubsp.short_name', 'UBSP') }} — @yield('title', 'Dashboard')</title>
     <x-brand-fonts />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.theme-variables')
     @stack('head')
 </head>
 <body class="surface-page">
@@ -45,6 +47,10 @@
                 @endif
 
                 @role('super-admin|administrator')
+                    <a href="{{ route('platform.theme-settings') }}" class="sidebar-link {{ request()->routeIs('platform.theme-settings*') ? 'sidebar-link-active' : 'sidebar-link-inactive' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                        <span x-show="sidebarOpen">Theme Colors</span>
+                    </a>
                     <a href="{{ route('platform.email-settings') }}" class="sidebar-link {{ request()->routeIs('platform.email-settings*') ? 'sidebar-link-active' : 'sidebar-link-inactive' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         <span x-show="sidebarOpen">Email Settings</span>
@@ -88,7 +94,7 @@
                         </button>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-sm font-sans text-brand-indigo/70 dark:text-brand-lavender hover:text-brand-coral transition">Log out</button>
+                            <button type="submit" class="text-sm font-sans text-muted hover:text-brand-coral transition">Log out</button>
                         </form>
                     </div>
                 </div>

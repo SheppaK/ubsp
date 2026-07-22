@@ -22,6 +22,10 @@ class BusinessRegistrationController extends Controller
 
     public function create(): View
     {
+        if (request()->hasSession()) {
+            request()->session()->regenerateToken();
+        }
+
         $availableModules = $this->modules->enabled()->filter(function (array $module, string $slug) {
             return PlatformModule::where('slug', $slug)->where('is_enabled', true)->exists();
         });
@@ -33,7 +37,7 @@ class BusinessRegistrationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $moduleSlugs = array_keys(config('ubsp.modules', []));
+        $enabledSlugs = PlatformModule::query()->where('is_enabled', true)->pluck('slug')->all();
 
         $validated = $request->validate([
             'business_name' => ['required', 'string', 'max:255'],
@@ -43,7 +47,7 @@ class BusinessRegistrationController extends Controller
             'address' => ['nullable', 'string', 'max:500'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'modules' => ['required', 'array', 'min:1'],
-            'modules.*' => ['string', 'in:'.implode(',', $moduleSlugs)],
+            'modules.*' => ['string', 'in:'.implode(',', $enabledSlugs)],
         ]);
 
         $business = $this->registration->register($validated, $validated['modules']);

@@ -15,13 +15,15 @@ export default {
         extend: {
             colors: {
                 brand: {
-                    lavender: '#b8b8d1',
-                    indigo: '#5b5f97',
-                    amber: '#ffc145',
-                    cream: '#fffffb',
-                    coral: '#ff6b6c',
-                    'indigo-dark': '#4a4d7a',
-                    'lavender-light': '#d4d4e8',
+                    lavender: 'rgb(var(--color-lavender) / <alpha-value>)',
+                    indigo: 'rgb(var(--color-indigo) / <alpha-value>)',
+                    amber: 'rgb(var(--color-amber) / <alpha-value>)',
+                    cream: 'rgb(var(--color-cream) / <alpha-value>)',
+                    coral: 'rgb(var(--color-coral) / <alpha-value>)',
+                    'indigo-dark': 'rgb(var(--color-indigo-dark) / <alpha-value>)',
+                    'lavender-light': 'rgb(var(--color-lavender) / <alpha-value>)',
+                    'page-dark': 'rgb(var(--color-page-dark) / <alpha-value>)',
+                    'surface-dark': 'rgb(var(--color-surface-dark) / <alpha-value>)',
                 },
             },
             fontFamily: {

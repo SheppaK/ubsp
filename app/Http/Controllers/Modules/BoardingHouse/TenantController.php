@@ -59,7 +59,9 @@ class TenantController extends Controller
 
         return redirect()
             ->route('modules.boarding-house.admin.tenants.index')
-            ->with('success', 'Tenant account created. Login credentials have been sent to '.$validated['email'].'.');
+            ->with('success', session('email_sent', true)
+                ? 'Tenant account created. Login credentials sent to '.$validated['email'].'.'
+                : 'Tenant account created. Email could not be sent — copy the temporary password shown below.');
     }
 
     protected function resolveBusiness(Request $request): Business

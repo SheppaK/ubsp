@@ -1,7 +1,7 @@
 <x-guest-layout>
     <h2 class="font-heading text-2xl font-bold text-brand-indigo mb-6 hero-animate">{{ __('Log in') }}</h2>
 
-    <x-auth-session-status class="mb-4 font-sans text-brand-indigo/70" :status="session('status')" />
+    <x-auth-session-status class="mb-4 font-sans text-brand-coral font-medium" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}" class="hero-animate space-y-4">
         @csrf

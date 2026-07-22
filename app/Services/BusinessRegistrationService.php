@@ -138,7 +138,14 @@ class BusinessRegistrationService
             'invited_by' => $inviter->id,
         ]);
 
-        $this->sendTenantCredentials($tenant, $plainPassword, $business);
+        try {
+            $this->sendTenantCredentials($tenant, $plainPassword, $business);
+            session()->flash('email_sent', true);
+        } catch (\Throwable $e) {
+            report($e);
+            session()->flash('email_sent', false);
+            session()->flash('temp_password', $plainPassword);
+        }
 
         return $tenant;
     }

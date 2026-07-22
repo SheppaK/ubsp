@@ -20,6 +20,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+        if (request()->hasSession()) {
+            request()->session()->regenerateToken();
+        }
+
         return view('auth.register');
     }
 

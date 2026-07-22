@@ -49,6 +49,53 @@ return [
         'module-dot-coral',
     ],
 
+    'theme_defaults' => [
+        'color_lavender' => '#b8b8d1',
+        'color_indigo' => '#5b5f97',
+        'color_indigo_dark' => '#4a4d7a',
+        'color_amber' => '#ffc145',
+        'color_cream' => '#fffffb',
+        'color_coral' => '#ff6b6c',
+        'color_page_dark' => '#2a2d52',
+        'color_surface_dark' => '#45497a',
+    ],
+
+    'theme_presets' => [
+        'ubsp-classic' => [
+            'label' => 'UBSP Classic',
+            'color_lavender' => '#b8b8d1',
+            'color_indigo' => '#5b5f97',
+            'color_indigo_dark' => '#4a4d7a',
+            'color_amber' => '#ffc145',
+            'color_cream' => '#fffffb',
+            'color_coral' => '#ff6b6c',
+            'color_page_dark' => '#2a2d52',
+            'color_surface_dark' => '#45497a',
+        ],
+        'ocean' => [
+            'label' => 'Ocean Blue',
+            'color_lavender' => '#a8c5da',
+            'color_indigo' => '#2c5282',
+            'color_indigo_dark' => '#1a365d',
+            'color_amber' => '#ecc94b',
+            'color_cream' => '#f7fafc',
+            'color_coral' => '#e53e3e',
+            'color_page_dark' => '#1a202c',
+            'color_surface_dark' => '#2d3748',
+        ],
+        'forest' => [
+            'label' => 'Forest Green',
+            'color_lavender' => '#a7c4a0',
+            'color_indigo' => '#2f5233',
+            'color_indigo_dark' => '#1b3022',
+            'color_amber' => '#d4a017',
+            'color_cream' => '#f5f5f0',
+            'color_coral' => '#c0392b',
+            'color_page_dark' => '#1a2e1a',
+            'color_surface_dark' => '#2d4a2d',
+        ],
+    ],
+
     'modules' => [
         'electronics-tracker' => [
             'name' => 'Electronics Tracker',

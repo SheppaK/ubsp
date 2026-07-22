@@ -7,6 +7,7 @@
     <title>{{ config('ubsp.short_name') }} — Universal Business Systems Platform</title>
     <x-brand-fonts />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.theme-variables')
 </head>
 <body class="surface-page overflow-x-hidden">
     {{-- Decorative blobs --}}

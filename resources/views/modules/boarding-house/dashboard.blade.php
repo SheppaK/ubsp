@@ -19,9 +19,9 @@
                 <a href="{{ route('modules.boarding-house.roommates.index') }}" class="btn-secondary">Roommates</a>
                 <a href="{{ route('modules.boarding-house.messages.index') }}" class="btn-secondary">Messages</a>
                 @if($isManager)
-                    <a href="{{ route('modules.boarding-house.admin.properties.index') }}" class="btn-ghost !text-brand-cream !border-brand-lavender/50">Manage Listings</a>
-                    <a href="{{ route('modules.boarding-house.admin.tenants.index') }}" class="btn-ghost !text-brand-cream !border-brand-lavender/50">Tenants</a>
-                    <a href="{{ route('modules.boarding-house.admin.analytics') }}" class="btn-ghost !text-brand-cream !border-brand-lavender/50">Analytics</a>
+                    <a href="{{ route('modules.boarding-house.admin.properties.index') }}" class="btn-ghost !text-brand-cream !border-white/40">Manage Listings</a>
+                    <a href="{{ route('modules.boarding-house.admin.tenants.index') }}" class="btn-ghost !text-brand-cream !border-white/40">Tenants</a>
+                    <a href="{{ route('modules.boarding-house.admin.analytics') }}" class="btn-ghost !text-brand-cream !border-white/40">Analytics</a>
                 @endif
             </div>
         </div>
@@ -30,23 +30,23 @@
     {{-- Stats --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="stat-card stagger-item">
-            <p class="text-sm font-sans text-brand-indigo/60">Listed Properties</p>
-            <p class="text-3xl font-heading font-bold text-brand-indigo" data-count="{{ $stats['properties'] }}">{{ $stats['properties'] }}</p>
+            <p class="stat-label">Listed Properties</p>
+            <p class="stat-value" data-count="{{ $stats['properties'] }}">{{ $stats['properties'] }}</p>
         </div>
         <div class="stat-card stagger-item">
-            <p class="text-sm font-sans text-brand-indigo/60">Available Rooms</p>
-            <p class="text-3xl font-heading font-bold text-brand-coral" data-count="{{ $stats['available_rooms'] }}">{{ $stats['available_rooms'] }}</p>
+            <p class="stat-label">Available Rooms</p>
+            <p class="stat-value text-brand-coral" data-count="{{ $stats['available_rooms'] }}">{{ $stats['available_rooms'] }}</p>
         </div>
         <div class="stat-card stagger-item">
-            <p class="text-sm font-sans text-brand-indigo/60">My Bookings</p>
-            <p class="text-3xl font-heading font-bold text-brand-indigo">{{ $stats['my_bookings'] }}</p>
+            <p class="stat-label">My Bookings</p>
+            <p class="stat-value">{{ $stats['my_bookings'] }}</p>
         </div>
         @if($isManager)
             <div class="stat-card stagger-item bento-card-accent">
-                <p class="text-sm font-sans opacity-80">Pending Requests</p>
-                <p class="text-3xl font-heading font-bold">{{ $stats['pending_bookings'] }}</p>
+                <p class="stat-label !text-brand-indigo/80">Pending Requests</p>
+                <p class="stat-value !text-brand-indigo">{{ $stats['pending_bookings'] }}</p>
                 @if($stats['pending_bookings'] > 0)
-                    <a href="{{ route('modules.boarding-house.admin.bookings.manage', ['status' => 'pending']) }}" class="text-sm font-sans underline mt-1">Review now</a>
+                    <a href="{{ route('modules.boarding-house.admin.bookings.manage', ['status' => 'pending']) }}" class="text-sm font-sans text-brand-indigo underline mt-1">Review now</a>
                 @endif
             </div>
         @endif
@@ -55,24 +55,24 @@
     {{-- Featured properties --}}
     <div>
         <div class="flex items-center justify-between mb-6 stagger-item">
-            <h3 class="font-heading text-xl font-semibold text-brand-indigo">Featured Near Campus</h3>
+            <h3 class="font-heading text-xl font-semibold text-heading">Featured Near Campus</h3>
             <a href="{{ route('modules.boarding-house.search.index') }}" class="font-sans text-sm text-brand-coral hover:underline">View all &rarr;</a>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach($recentProperties as $property)
                 <a href="{{ route('modules.boarding-house.search.show', $property) }}" class="bento-card stagger-item overflow-hidden p-0 group" data-hover-lift>
-                    <div class="h-36 bg-brand-lavender/40 flex items-center justify-center">
+                    <div class="h-36 bg-brand-lavender/30 dark:bg-white/10 flex items-center justify-center">
                         @if($property->coverUrl())
                             <img src="{{ $property->coverUrl() }}" alt="" class="w-full h-full object-cover">
                         @else
-                            <span class="text-4xl font-heading font-bold text-brand-indigo/30">{{ substr($property->name, 0, 1) }}</span>
+                            <span class="text-4xl font-heading font-bold text-subtle">{{ substr($property->name, 0, 1) }}</span>
                         @endif
                     </div>
                     <div class="p-4">
-                        <h4 class="font-heading font-semibold text-brand-indigo group-hover:text-brand-coral transition">{{ $property->name }}</h4>
-                        <p class="text-xs font-sans text-brand-indigo/60 mt-1">{{ $property->city }} · {{ $property->distance_to_campus_km }}km from campus</p>
+                        <h4 class="font-heading font-semibold text-heading group-hover:text-brand-coral transition">{{ $property->name }}</h4>
+                        <p class="text-xs font-sans text-muted mt-1">{{ $property->city }} · {{ $property->distance_to_campus_km }}km from campus</p>
                         <div class="flex items-center justify-between mt-3">
-                            <span class="font-heading font-bold text-brand-indigo">${{ number_format($property->minPrice() ?? 0) }}/mo</span>
+                            <span class="font-heading font-bold text-heading">${{ number_format($property->minPrice() ?? 0) }}/mo</span>
                             @if($property->averageRating())
                                 <span class="tag-accent">★ {{ number_format($property->averageRating(), 1) }}</span>
                             @endif
@@ -84,10 +84,10 @@
     </div>
 
     @if($isManager)
-        <div class="bento-card stagger-item p-8 border-2 border-dashed border-brand-lavender">
-            <h3 class="font-heading font-semibold text-brand-indigo mb-2">Landlord / Admin Tools</h3>
-            <p class="font-sans text-sm text-brand-indigo/60 mb-4">List properties, add rooms, upload photos, and manage booking requests.</p>
-            <div class="flex gap-3">
+        <div class="bento-card stagger-item p-8 border-2 border-dashed border-brand-lavender dark:border-white/20">
+            <h3 class="font-heading font-semibold text-heading mb-2">Landlord / Admin Tools</h3>
+            <p class="font-sans text-sm text-muted mb-4">List properties, add rooms, upload photos, and manage booking requests.</p>
+            <div class="flex gap-3 flex-wrap">
                 <a href="{{ route('modules.boarding-house.admin.properties.create') }}" class="btn-primary">Add New Property</a>
                 <a href="{{ route('modules.boarding-house.admin.bookings.manage') }}" class="btn-secondary">Booking Inbox</a>
                 <a href="{{ route('modules.boarding-house.admin.analytics') }}" class="btn-secondary">Analytics</a>

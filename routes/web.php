@@ -7,6 +7,7 @@ use App\Http\Controllers\BusinessDashboardController;
 use App\Http\Controllers\EmailSettingsController;
 use App\Http\Controllers\PlatformController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ThemeSettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:super-admin|administrator')->group(function () {
+        Route::get('/admin/theme-settings', [ThemeSettingsController::class, 'edit'])->name('platform.theme-settings');
+        Route::put('/admin/theme-settings', [ThemeSettingsController::class, 'update'])->name('platform.theme-settings.update');
+        Route::post('/admin/theme-settings/reset', [ThemeSettingsController::class, 'reset'])->name('platform.theme-settings.reset');
         Route::get('/admin/email-settings', [EmailSettingsController::class, 'edit'])->name('platform.email-settings');
         Route::put('/admin/email-settings', [EmailSettingsController::class, 'update'])->name('platform.email-settings.update');
         Route::post('/admin/email-settings/test', [EmailSettingsController::class, 'test'])->name('platform.email-settings.test');
