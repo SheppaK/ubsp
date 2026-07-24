@@ -149,4 +149,10 @@
     .float-blob {
         @apply absolute rounded-full pointer-events-none;
     }
+
+    /* GSAP/Motion must never leave structural layout invisible */
+    [data-animate="main"],
+    [data-animate="sidebar"] {
+        opacity: 1;
+    }
 }

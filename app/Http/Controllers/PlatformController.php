@@ -21,11 +21,11 @@ class PlatformController extends Controller
     {
         $user = auth()->user();
         $allModules = $this->modules->all();
-        $enabledSlugs = \App\Models\PlatformModule::pluck('is_enabled', 'slug');
+        $records = \App\Models\PlatformModule::query()->get()->keyBy('slug');
 
         return view('platform.modules', [
             'modules' => $allModules,
-            'enabledSlugs' => $enabledSlugs,
+            'moduleRecords' => $records,
             'canManage' => $user->hasRole(['super-admin', 'administrator']),
         ]);
     }
@@ -38,5 +38,19 @@ class PlatformController extends Controller
         $module->update(['is_enabled' => ! $module->is_enabled]);
 
         return back()->with('success', "{$module->name} ".($module->is_enabled ? 'enabled' : 'disabled').'.');
+    }
+
+    public function updateModulePrice(Request $request, string $slug): \Illuminate\Http\RedirectResponse
+    {
+        abort_unless($request->user()->hasRole(['super-admin', 'administrator']), 403);
+
+        $validated = $request->validate([
+            'price_zmw' => ['required', 'numeric', 'min:0', 'max:999999.99'],
+        ]);
+
+        $module = \App\Models\PlatformModule::where('slug', $slug)->firstOrFail();
+        $module->update(['price_zmw' => $validated['price_zmw']]);
+
+        return back()->with('success', "Price for {$module->name} updated to K ".number_format((float) $module->price_zmw, 2).' ZMW.');
     }
 }

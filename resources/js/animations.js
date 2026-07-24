@@ -4,70 +4,93 @@ import { animate, stagger, inView, press } from 'motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/** Reset inline opacity/transform GSAP may leave behind (e.g. after bfcache refresh). */
+function resetAnimationStyles() {
+    document.querySelectorAll(
+        '.hero-animate, [data-animate="main"], [data-animate="sidebar"], .bento-card, .bento-card-dark, .bento-card-accent, .stat-card, .stagger-item'
+    ).forEach((el) => {
+        el.style.removeProperty('opacity');
+        el.style.removeProperty('transform');
+    });
+}
+
 function initPageEntrance() {
     const heroItems = document.querySelectorAll('.hero-animate');
     if (heroItems.length) {
-        gsap.from(heroItems, {
-            opacity: 0,
-            y: 48,
-            duration: 0.9,
-            stagger: 0.12,
-            ease: 'power3.out',
-            delay: 0.1,
-        });
+        gsap.fromTo(
+            heroItems,
+            { opacity: 0, y: 32 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                stagger: 0.08,
+                ease: 'power3.out',
+                delay: 0.05,
+                clearProps: 'opacity,transform',
+            }
+        );
     }
 
     const sidebar = document.querySelector('[data-animate="sidebar"]');
     if (sidebar) {
-        gsap.from(sidebar, {
-            x: -32,
-            opacity: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-        });
+        gsap.fromTo(
+            sidebar,
+            { x: -24 },
+            { x: 0, duration: 0.5, ease: 'power3.out', clearProps: 'transform' }
+        );
     }
 
+    // Do NOT animate main opacity — it caused the whole page to look faint when animation failed.
     const mainContent = document.querySelector('[data-animate="main"]');
     if (mainContent) {
-        gsap.from(mainContent, {
-            opacity: 0,
-            y: 20,
-            duration: 0.6,
-            ease: 'power2.out',
-            delay: 0.2,
-        });
+        gsap.fromTo(
+            mainContent,
+            { y: 12 },
+            { y: 0, duration: 0.45, ease: 'power2.out', delay: 0.1, clearProps: 'transform' }
+        );
     }
 }
 
 function initScrollAnimations() {
     gsap.utils.toArray('.stagger-item').forEach((item, index) => {
-        gsap.from(item, {
-            scrollTrigger: {
-                trigger: item,
-                start: 'top 92%',
-                toggleActions: 'play none none none',
-            },
-            opacity: 0,
-            y: 32,
-            duration: 0.55,
-            delay: (index % 4) * 0.08,
-            ease: 'power2.out',
-        });
+        gsap.fromTo(
+            item,
+            { opacity: 0, y: 24 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                delay: (index % 4) * 0.06,
+                ease: 'power2.out',
+                clearProps: 'opacity,transform',
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 92%',
+                    toggleActions: 'play none none none',
+                },
+            }
+        );
     });
 
-    inView('.bento-card, .bento-card-dark, .bento-card-accent', (element) => {
-        animate(
-            element,
-            { opacity: [0, 1], transform: ['translateY(28px)', 'translateY(0)'] },
-            { duration: 0.65, easing: [0.22, 1, 0.36, 1] }
-        );
-    }, { margin: '-40px 0px -40px 0px' });
+    // Skip cards already animated on page load via .hero-animate (avoid double opacity:0).
+    inView(
+        '.bento-card:not(.hero-animate), .bento-card-dark, .bento-card-accent',
+        (element) => {
+            animate(
+                element,
+                { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0)'] },
+                { duration: 0.5, easing: [0.22, 1, 0.36, 1] }
+            );
+        },
+        { margin: '-40px 0px -40px 0px' }
+    );
 
     inView('.stat-card', (element) => {
         animate(
             element,
-            { opacity: [0, 1], scale: [0.95, 1] },
-            { duration: 0.5, easing: 'ease-out' }
+            { opacity: [0, 1], scale: [0.97, 1] },
+            { duration: 0.45, easing: 'ease-out' }
         );
     }, { margin: '-20px' });
 }
@@ -136,12 +159,28 @@ function initCounterAnimations() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootAnimations() {
+    resetAnimationStyles();
     initPageEntrance();
     initScrollAnimations();
     initFloatingElements();
     initInteractions();
     initCounterAnimations();
+
+    document.documentElement.classList.add('js-animations-ready');
+
+    // Safety net: if anything is still invisible after animations, restore visibility.
+    window.setTimeout(resetAnimationStyles, 1200);
+}
+
+document.addEventListener('DOMContentLoaded', bootAnimations);
+
+// Fix faint page when restored from browser back/forward cache.
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        resetAnimationStyles();
+        bootAnimations();
+    }
 });
 
 export { gsap, animate };

@@ -55,13 +55,17 @@ class TenantController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
         ]);
 
-        $this->registration->createTenantAccount($business, $request->user(), $validated);
+        $result = $this->registration->createTenantAccount($business, $request->user(), $validated);
 
-        return redirect()
-            ->route('modules.boarding-house.admin.tenants.index')
-            ->with('success', session('email_sent', true)
-                ? 'Tenant account created. Login credentials sent to '.$validated['email'].'.'
-                : 'Tenant account created. Email could not be sent — copy the temporary password shown below.');
+        $redirect = redirect()->route('modules.boarding-house.admin.tenants.index');
+
+        if ($result['email_sent']) {
+            return $redirect->with('success', 'Tenant account created. Login credentials sent to '.$validated['email'].'.');
+        }
+
+        return $redirect
+            ->with('success', 'Tenant account created. Email could not be sent — copy the temporary password below.')
+            ->with('temp_password', $result['plain_password']);
     }
 
     protected function resolveBusiness(Request $request): Business

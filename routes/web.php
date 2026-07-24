@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\BusinessDashboardController;
 use App\Http\Controllers\EmailSettingsController;
+use App\Http\Controllers\KcpayCallbackController;
+use App\Http\Controllers\KcpaySettingsController;
 use App\Http\Controllers\PlatformController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeSettingsController;
@@ -14,19 +16,36 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::post('/api/kcpay/callback', KcpayCallbackController::class)->name('kcpay.callback');
+
 Route::middleware('guest')->group(function () {
     Route::get('/register/business', [BusinessRegistrationController::class, 'create'])->name('register.business');
-    Route::post('/register/business', [BusinessRegistrationController::class, 'store']);
+    Route::post('/register/business', [BusinessRegistrationController::class, 'store'])->name('register.business.store');
+});
+
+Route::prefix('register/business')->name('register.business.')->group(function () {
+    Route::get('/checkout/{payment}', [BusinessRegistrationController::class, 'checkout'])->name('checkout');
+    Route::post('/pay/{payment}', [BusinessRegistrationController::class, 'pay'])->name('pay');
+    Route::get('/waiting/{payment}', [BusinessRegistrationController::class, 'waiting'])->name('waiting');
+    Route::get('/status/{payment}', [BusinessRegistrationController::class, 'status'])->name('status');
+    Route::get('/success/{payment}', [BusinessRegistrationController::class, 'success'])->name('success');
+    Route::get('/return/{payment}', [BusinessRegistrationController::class, 'return'])->name('return');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [PlatformController::class, 'dashboard'])->name('platform.dashboard');
+    Route::middleware('business.paid')->group(function () {
+        Route::get('/dashboard', [PlatformController::class, 'dashboard'])->name('platform.dashboard');
+    });
     Route::get('/modules/manage', [PlatformController::class, 'modules'])->name('platform.modules');
     Route::patch('/modules/{slug}/toggle', [PlatformController::class, 'toggleModule'])->name('platform.modules.toggle');
+    Route::patch('/modules/{slug}/price', [PlatformController::class, 'updateModulePrice'])->name('platform.modules.price');
 
     Route::prefix('business')->name('platform.business.')->group(function () {
-        Route::get('/', [BusinessDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::get('/users', [BusinessDashboardController::class, 'users'])->name('users');
+        Route::get('/payment', [BusinessDashboardController::class, 'payment'])->name('payment');
+        Route::middleware('business.paid')->group(function () {
+            Route::get('/', [BusinessDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::get('/users', [BusinessDashboardController::class, 'users'])->name('users');
+        });
     });
 
     Route::middleware('role:super-admin|administrator')->group(function () {
@@ -36,6 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/email-settings', [EmailSettingsController::class, 'edit'])->name('platform.email-settings');
         Route::put('/admin/email-settings', [EmailSettingsController::class, 'update'])->name('platform.email-settings.update');
         Route::post('/admin/email-settings/test', [EmailSettingsController::class, 'test'])->name('platform.email-settings.test');
+        Route::get('/admin/kcpay-settings', [KcpaySettingsController::class, 'edit'])->name('platform.kcpay-settings');
+        Route::put('/admin/kcpay-settings', [KcpaySettingsController::class, 'update'])->name('platform.kcpay-settings.update');
+        Route::post('/admin/kcpay-settings/test', [KcpaySettingsController::class, 'testConnection'])->name('platform.kcpay-settings.test');
     });
 });
 

@@ -1,0 +1,9 @@
+# Block shell scripts and docs; post-deploy.php is intentionally reachable once (then delete it).
+<FilesMatch "\.(sh|md|ini)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>

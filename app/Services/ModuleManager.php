@@ -35,6 +35,14 @@ class ModuleManager
             return collect();
         }
 
+        // Unpaid business owners cannot see or open modules.
+        if (! $user->hasRole(['super-admin', 'administrator'])) {
+            $business = $user->ownedBusiness;
+            if ($business && ! $business->hasPaid()) {
+                return collect();
+            }
+        }
+
         return $this->enabled()->filter(function (array $module, string $slug) use ($user) {
             if ($user->hasRole('super-admin')) {
                 return true;

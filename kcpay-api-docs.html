@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KC Pay — Developer Integration Guide</title>
+<style>
+  :root {
+    --navy: #1A1A2E;
+    --gold: #C9A84C;
+    --bg: #FAF8F5;
+    --card: #ffffff;
+    --text: #3a3a4a;
+    --muted: #8e8e9a;
+    --border: #f0ece4;
+    --code-bg: #1e1e2e;
+    --code-text: #e0e0e0;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  
+  /* Header */
+  .header { background: var(--navy); padding: 60px 24px 50px; text-align: center; position: relative; }
+  .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .header h1 { font-size: 32px; color: #fff; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--gold); }
+  .header p { color: rgba(255,255,255,0.5); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
+  .header .version { display: inline-block; background: var(--gold); color: #fff; font-size: 11px; padding: 3px 12px; margin-top: 16px; font-weight: 600; letter-spacing: 1px; }
+
+  /* Layout */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+  
+  /* Navigation */
+  .toc { background: var(--card); border: 1px solid var(--border); padding: 28px 32px; margin-bottom: 40px; }
+  .toc h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 16px; font-weight: 600; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .toc a:hover { color: var(--gold); }
+
+  /* Sections */
+  .section { background: var(--card); border: 1px solid var(--border); padding: 32px; margin-bottom: 24px; }
+  .section h2 { font-size: 22px; color: var(--navy); margin-bottom: 6px; font-weight: 700; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+  .section h3 { font-size: 16px; color: var(--navy); margin: 24px 0 10px; font-weight: 600; }
+  .section h4 { font-size: 14px; color: var(--navy); margin: 18px 0 8px; font-weight: 600; }
+  .section p { margin-bottom: 12px; font-size: 14px; color: var(--text); }
+  .section ul, .section ol { padding-left: 20px; margin-bottom: 16px; }
+  .section li { font-size: 14px; margin-bottom: 4px; }
+
+  /* Method badges */
+  .method { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; letter-spacing: 1px; margin-right: 8px; vertical-align: middle; }
+  .method-post { background: var(--green); color: #fff; }
+  .method-get { background: var(--blue); color: #fff; }
+  
+  /* Endpoint */
+  .endpoint { display: flex; align-items: center; background: var(--navy); padding: 12px 16px; margin: 16px 0; font-family: 'Consolas', 'Fira Code', monospace; font-size: 14px; color: var(--gold); overflow-x: auto; }
+  
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: #faf8f5; }
+  .required { color: var(--red); font-weight: 600; font-size: 11px; }
+  .optional { color: var(--muted); font-size: 11px; }
+  .type { color: var(--blue); font-family: monospace; font-size: 12px; }
+
+  /* Code blocks */
+  pre { background: var(--code-bg); color: var(--code-text); padding: 20px; overflow-x: auto; font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0; border-left: 3px solid var(--gold); position: relative; }
+  code { font-family: 'Consolas', 'Fira Code', monospace; font-size: 13px; }
+  p code, li code, td code { background: #f0ece4; padding: 2px 6px; color: var(--navy); font-size: 12px; }
+  .code-label { display: inline-block; background: var(--gold); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0; }
+
+  /* Status badges */
+  .status { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+  .status-success { background: #dcfce7; color: #166534; }
+  .status-error { background: #fee2e2; color: #991b1b; }
+  .status-warn { background: #fef3c7; color: #92400e; }
+
+  /* Info boxes */
+  .info-box { padding: 16px 20px; margin: 16px 0; font-size: 13px; border-left: 4px solid; }
+  .info-box.note { background: #eff6ff; border-color: var(--blue); color: #1e40af; }
+  .info-box.warning { background: #fffbeb; border-color: var(--amber); color: #92400e; }
+  .info-box.danger { background: #fef2f2; border-color: var(--red); color: #991b1b; }
+  .info-box.success { background: #f0fdf4; border-color: var(--green); color: #166534; }
+  .info-box strong { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Flow diagram */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 20px 0; }
+  .flow-step { background: var(--navy); color: #fff; padding: 10px 18px; font-size: 12px; font-weight: 600; position: relative; }
+  .flow-step span { display: block; font-size: 10px; color: var(--gold); font-weight: 400; margin-top: 2px; }
+  .flow-arrow { color: var(--gold); font-size: 20px; font-weight: 700; }
+
+  /* Steps */
+  .step-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--gold); color: #fff; font-size: 13px; font-weight: 700; margin-right: 10px; flex-shrink: 0; }
+  .step-header { display: flex; align-items: center; margin-bottom: 12px; }
+  .step-header h3 { margin: 0; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 40px 24px; color: var(--muted); font-size: 12px; }
+  .footer a { color: var(--gold); text-decoration: none; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 24px; }
+    .section { padding: 20px; }
+    .flow { flex-direction: column; align-items: stretch; }
+    .flow-arrow { transform: rotate(90deg); text-align: center; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1><span>KC Pay</span> Payment Gateway</h1>
+  <p>Developer Integration Guide</p>
+  <div class="version">v1.0 — For Developers</div>
+</div>
+
+<div class="container">
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">What is KC Pay?</a></li>
+      <li><a href="#getting-started">Getting Started — Create Your Account</a></li>
+      <li><a href="#credentials">Your API Credentials</a></li>
+      <li><a href="#how-it-works">How It Works — Payment Flow</a></li>
+      <li><a href="#initiate">Step 1: Initiate a Payment</a></li>
+      <li><a href="#status">Step 2: Check Payment Status (Polling)</a></li>
+      <li><a href="#callback">Step 3: Receive Payment Callback (Webhook)</a></li>
+      <li><a href="#card-payments">Card Payments (Redirect Flow)</a></li>
+      <li><a href="#code-examples">Full Code Examples (Node.js, PHP, Python)</a></li>
+      <li><a href="#error-handling">Error Handling</a></li>
+      <li><a href="#testing">Testing & Troubleshooting</a></li>
+      <li><a href="#reference">Quick Reference</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Overview -->
+  <div class="section" id="overview">
+    <h2>1. What is KC Pay?</h2>
+    <p>KC Pay is a payment gateway built for <strong>Zambia</strong> that allows you to accept payments via:</p>
+    <ul>
+      <li><strong>Mobile Money</strong> — MTN, Airtel, and Zamtel</li>
+      <li><strong>Card Payments</strong> — Visa, Mastercard (via hosted payment page)</li>
+    </ul>
+    <p>All transactions are processed in <strong>ZMW (Zambian Kwacha)</strong>. The API is simple — just 2 endpoints to integrate: one to initiate payments and one to check status. KC Pay also sends webhooks to your server when payments complete.</p>
+
+    <div class="info-box success">
+      <strong>Why KC Pay?</strong>
+      Simple REST API. No complex SDKs. Works with any language (Node.js, PHP, Python, etc.). Supports mobile money and cards. Built for Zambian businesses.
+    </div>
+  </div>
+
+  <!-- 2. Getting Started -->
+  <div class="section" id="getting-started">
+    <h2>2. Getting Started — Create Your Account</h2>
+    <p>Before you can integrate KC Pay, you need a merchant account. Follow these steps:</p>
+
+    <div class="step-header">
+      <span class="step-number">1</span>
+      <h3>Create a KC Pay Account</h3>
+    </div>
+    <p>Visit <a href="https://kundananjicreations.com/pages/member_login" target="_blank" style="color: var(--gold); font-weight: 600;">https://kundananjicreations.com/pages/member_login</a> and register for a new account. You will need to provide your business details.</p>
+
+    <div class="step-header">
+      <span class="step-number">2</span>
+      <h3>Create a Product</h3>
+    </div>
+    <p>Once logged in, navigate to your dashboard and create a <strong>Product</strong>. This represents what you are selling (e.g., "My SaaS Subscription", "Event Tickets", "Online Store"). You will receive a <strong>Product Reference</strong> — save this, you'll need it for API calls.</p>
+
+    <div class="step-header">
+      <span class="step-number">3</span>
+      <h3>Get Your API Credentials</h3>
+    </div>
+    <p>From your KC Pay dashboard, locate your:</p>
+    <ul>
+      <li><strong>API Username</strong></li>
+      <li><strong>API Password</strong></li>
+      <li><strong>Product Reference</strong> (from the product you created)</li>
+      <li><strong>Public Key</strong> and <strong>Private Key</strong> (if you plan to accept card payments)</li>
+    </ul>
+
+    <div class="step-header">
+      <span class="step-number">4</span>
+      <h3>Set Up Your Callback URL</h3>
+    </div>
+    <p>In your KC Pay dashboard, configure your <strong>Callback URL</strong> (webhook). This is the URL on your server where KC Pay will send payment results. For example:</p>
+    <div class="endpoint">
+      <code>https://yourdomain.com/api/payments/callback</code>
+    </div>
+    <p>This URL must be <strong>publicly accessible</strong> — KC Pay's servers need to reach it directly.</p>
+
+    <div class="step-header">
+      <span class="step-number">5</span>
+      <h3>Store Credentials Securely</h3>
+    </div>
+    <p>Add your credentials to your project's environment variables (e.g., a <code>.env</code> file). <strong>Never</strong> hard-code credentials in your source code.</p>
+
+    <pre># .env file
+KCPAY_BASE_URL=https://productcheckout.kundananjicreations.com/
+KCPAY_USERNAME=your_api_username
+KCPAY_PASSWORD=your_api_password
+KCPAY_PRODUCT_REFERENCE=YourProductName
+KCPAY_PUBLIC_KEY=pk_live_xxxx
+KCPAY_PRIVATE_KEY=sk_live_xxxx
+KCPAY_MODE=test</pre>
+
+    <div class="info-box warning">
+      <strong>&#9888; Security</strong>
+      Never commit your <code>.env</code> file to Git or any version control system. Add it to your <code>.gitignore</code>.
+    </div>
+  </div>
+
+  <!-- 3. Credentials -->
+  <div class="section" id="credentials">
+    <h2>3. Your API Credentials</h2>
+    <p>Here is a summary of the credentials you'll use throughout the integration:</p>
+
+    <table>
+      <thead>
+        <tr><th>Credential</th><th>Where to Find</th><th>Used For</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>API Username</code></td>
+          <td>KC Pay Dashboard</td>
+          <td>Authenticating every API request</td>
+        </tr>
+        <tr>
+          <td><code>API Password</code></td>
+          <td>KC Pay Dashboard</td>
+          <td>Authenticating every API request</td>
+        </tr>
+        <tr>
+          <td><code>Product Reference</code></td>
+          <td>KC Pay Dashboard &rarr; Products</td>
+          <td>Identifying what the customer is paying for</td>
+        </tr>
+        <tr>
+          <td><code>Public Key</code></td>
+          <td>KC Pay Dashboard</td>
+          <td>Card payments only</td>
+        </tr>
+        <tr>
+          <td><code>Private Key</code></td>
+          <td>KC Pay Dashboard</td>
+          <td>Card payments only</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Authentication</h3>
+    <p>KC Pay uses <strong>username + password</strong> authentication. Credentials are sent in the <strong>request body</strong> (not headers) with every API call:</p>
+    <pre>{
+  "apiUserName": "your_api_username",
+  "apiPassword": "your_api_password"
+}</pre>
+
+    <div class="info-box note">
+      <strong>&#8505; Note</strong>
+      There is no OAuth or token-based authentication. Your username and password authenticate each request directly.
+    </div>
+  </div>
+
+  <!-- 4. How It Works -->
+  <div class="section" id="how-it-works">
+    <h2>4. How It Works — Payment Flow</h2>
+
+    <h3>Mobile Money Flow</h3>
+    <div class="flow">
+      <div class="flow-step">1. Customer chooses to pay<span>Your app / website</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">2. Your server calls KC Pay<span>POST to Initiate endpoint</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">3. USSD push sent to phone<span>Customer approves on phone</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">4. KC Pay sends webhook<span>POST to your callback URL</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">5. You fulfill the order<span>Activate, deliver, etc.</span></div>
+    </div>
+
+    <h3>Card Payment Flow</h3>
+    <div class="flow">
+      <div class="flow-step">1. Customer chooses card<span>Your app / website</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">2. Your server calls KC Pay<span>POST to Initiate endpoint</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">3. Redirect to KC Pay page<span>Customer enters card details</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">4. KC Pay sends webhook<span>POST to your callback URL</span></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">5. You fulfill the order<span>Activate, deliver, etc.</span></div>
+    </div>
+
+    <h3>Key Concepts</h3>
+    <ul>
+      <li><strong>sellerReference</strong> — A unique ID you generate for each payment (e.g., <code>ORD-1707123456-X7</code>). Use this to match callbacks to your orders.</li>
+      <li><strong>token</strong> — Returned by KC Pay after initiating a payment. Used for status checks and card payment redirects.</li>
+      <li><strong>Callback / Webhook</strong> — KC Pay POSTs the payment result to your server. This is the primary way to know if a payment succeeded.</li>
+      <li><strong>Polling</strong> — As a fallback, you can poll KC Pay's status endpoint to check if a payment has completed.</li>
+    </ul>
+  </div>
+
+  <!-- 5. Initiate Payment -->
+  <div class="section" id="initiate">
+    <h2>5. Step 1: Initiate a Payment</h2>
+    <p>This is the first API call you make. It tells KC Pay to start a payment. For mobile money, this triggers a USSD push to the customer's phone.</p>
+
+    <div class="endpoint">
+      <span class="method method-post">POST</span>
+      <code>https://productcheckout.kundananjicreations.com/</code>
+    </div>
+
+    <h3>Request Body</h3>
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>apiUserName</code></td><td class="type">string</td><td><span class="required">Required</span></td><td>Your KC Pay API username</td></tr>
+        <tr><td><code>apiPassword</code></td><td class="type">string</td><td><span class="required">Required</span></td><td>Your KC Pay API password</td></tr>
+        <tr><td><code>amount</code></td><td class="type">number</td><td><span class="required">Required</span></td><td>Amount in ZMW (e.g. <code>50.00</code>)</td></tr>
+        <tr><td><code>paymentMethod</code></td><td class="type">string</td><td><span class="required">Required</span></td><td><code>"mobilemoney"</code> or <code>"card"</code></td></tr>
+        <tr><td><code>source</code></td><td class="type">string</td><td><span class="required">Required</span></td><td>Your app/product name (e.g. <code>"MyApp"</code>)</td></tr>
+        <tr><td><code>country</code></td><td class="type">string</td><td><span class="required">Required</span></td><td>Country code: <code>"zm"</code></td></tr>
+        <tr><td><code>currency</code></td><td class="type">string</td><td><span class="required">Required</span></td><td><code>"ZMW"</code></td></tr>
+        <tr><td><code>sellerReference</code></td><td class="type">string</td><td><span class="required">Required</span></td><td>Your unique payment/order reference</td></tr>
+        <tr><td><code>products</code></td><td class="type">array</td><td><span class="required">Required</span></td><td>Array of product objects (see below)</td></tr>
+        <tr><td><code>customerName</code></td><td class="type">string</td><td><span class="optional">Optional</span></td><td>Customer's full name</td></tr>
+        <tr><td><code>customerEmail</code></td><td class="type">string</td><td><span class="optional">Optional</span></td><td>Customer's email address</td></tr>
+        <tr><td><code>customerPhoneNumber</code></td><td class="type">string</td><td><span class="optional">Conditional</span></td><td>Phone number <strong>without</strong> leading 0 (e.g. <code>"971234567"</code>). Required for mobile money.</td></tr>
+        <tr><td><code>network</code></td><td class="type">string</td><td><span class="optional">Conditional</span></td><td><code>"mtn"</code>, <code>"airtel"</code>, or <code>"zamtel"</code>. Required for mobile money.</td></tr>
+        <tr><td><code>accountNo</code></td><td class="type">string</td><td><span class="optional">Conditional</span></td><td>Same as phone number (no leading 0). Required for mobile money.</td></tr>
+        <tr><td><code>userId</code></td><td class="type">string|null</td><td><span class="optional">Optional</span></td><td>Your internal user/customer ID for tracking</td></tr>
+        <tr><td><code>mode</code></td><td class="type">string</td><td><span class="optional">Optional</span></td><td><code>"production"</code> or <code>"test"</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Products Array</h3>
+    <pre>[
+  {
+    "productReference": "YourProductName",
+    "quantity": 1,
+    "amount": 50.00
+  }
+]</pre>
+
+    <h3>Full Request Example (Mobile Money)</h3>
+    <pre>{
+  "apiUserName": "your_username",
+  "apiPassword": "your_password",
+  "amount": 50.00,
+  "paymentMethod": "mobilemoney",
+  "source": "MyApp",
+  "country": "zm",
+  "currency": "ZMW",
+  "sellerReference": "ORD-1707123456-X7",
+  "products": [
+    { "productReference": "YourProductName", "quantity": 1, "amount": 50.00 }
+  ],
+  "customerName": "John Banda",
+  "customerEmail": "john@example.com",
+  "customerPhoneNumber": "971234567",
+  "network": "mtn",
+  "accountNo": "971234567",
+  "userId": "42",
+  "mode": "production"
+}</pre>
+
+    <h3>Success Response</h3>
+    <pre>{
+  "status": "Success",
+  "message": "Transaction initiated successfully",
+  "token": "txn_abc123def456",
+  "transactionId": "KC-789012"
+}</pre>
+
+    <div class="info-box note">
+      <strong>&#8505; Phone Number Format</strong>
+      Zambian phone numbers must have the leading <code>0</code> stripped. For example, <code>0971234567</code> becomes <code>971234567</code>. Do this in your code before sending.
+    </div>
+  </div>
+
+  <!-- 6. Check Status -->
+  <div class="section" id="status">
+    <h2>6. Step 2: Check Payment Status (Polling)</h2>
+    <p>After initiating a payment, you can poll this endpoint to check if the customer has completed it. This is useful as a <strong>fallback</strong> in case the webhook doesn't arrive.</p>
+
+    <div class="endpoint">
+      <span class="method method-post">POST</span>
+      <code>https://productcheckout.kundananjicreations.com/request-status</code>
+    </div>
+
+    <p>You can query by <strong>token</strong>, <strong>sellerReference</strong>, or <strong>transactionId</strong>:</p>
+
+    <h3>By Token</h3>
+    <pre>{
+  "apiUserName": "your_username",
+  "apiPassword": "your_password",
+  "token": "txn_abc123def456"
+}</pre>
+
+    <h3>By Seller Reference</h3>
+    <pre>{
+  "apiUserName": "your_username",
+  "apiPassword": "your_password",
+  "sellerReference": "ORD-1707123456-X7"
+}</pre>
+
+    <h3>Response</h3>
+    <pre>{
+  "status": "Success",
+  "transactionId": "KC-789012",
+  "paymentMethod": "mobilemoney",
+  "amount": 50.00,
+  "completedAt": "2026-02-16 12:30:00"
+}</pre>
+
+    <h3>Possible Status Values</h3>
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th><th>What to Do</th></tr></thead>
+      <tbody>
+        <tr><td><span class="status status-success">success / successful</span></td><td>Payment completed</td><td>Fulfill the order</td></tr>
+        <tr><td><span class="status status-warn">pending / processing</span></td><td>Waiting for customer</td><td>Keep polling (every 5 seconds)</td></tr>
+        <tr><td><span class="status status-error">failed</span></td><td>Payment failed or rejected</td><td>Show error, allow retry</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box warning">
+      <strong>&#9888; Polling Best Practice</strong>
+      Poll every 5 seconds for up to 2 minutes. If the response says "transaction not found," the transaction may still be propagating — treat it as pending and keep polling.
+    </div>
+  </div>
+
+  <!-- 7. Callback -->
+  <div class="section" id="callback">
+    <h2>7. Step 3: Receive Payment Callback (Webhook)</h2>
+    <p>When a payment completes (or fails), KC Pay sends a <strong>POST request</strong> to your callback URL. This is the <strong>most reliable</strong> way to know the payment result.</p>
+
+    <div class="endpoint">
+      <span class="method method-post">POST</span>
+      <code>https://yourdomain.com/api/payments/callback</code>
+    </div>
+
+    <div class="info-box danger">
+      <strong>&#128274; Important</strong>
+      Your callback endpoint must be <strong>publicly accessible</strong> with <strong>no authentication</strong>. KC Pay's servers need to POST to it directly. Make sure your firewall, hosting, and CORS settings allow this.
+    </div>
+
+    <h3>Callback Payload (sent by KC Pay)</h3>
+    <pre>{
+  "status": "Success",
+  "sellerReference": "ORD-1707123456-X7",
+  "transactionId": "KC-789012",
+  "token": "txn_abc123def456",
+  "amount": 50.00,
+  "paymentMethod": "mobilemoney",
+  "completedAt": "2026-02-16 12:30:00"
+}</pre>
+
+    <h3>How to Process the Callback</h3>
+    <ol>
+      <li>Parse the incoming JSON body</li>
+      <li>Find the matching order/payment in your database using <code>sellerReference</code></li>
+      <li>Check the <code>status</code> field</li>
+      <li>If <code>"Success"</code> or <code>"Successful"</code> &rarr; mark the order as paid, deliver the product/service</li>
+      <li>If anything else &rarr; mark as failed, notify the customer</li>
+      <li>Respond with HTTP <code>200</code> so KC Pay knows you received it</li>
+    </ol>
+
+    <h3>Your Server Should Respond</h3>
+    <table>
+      <thead><tr><th>Scenario</th><th>HTTP Code</th><th>Response</th></tr></thead>
+      <tbody>
+        <tr><td>Processed successfully</td><td>200</td><td><code>{ "success": true }</code></td></tr>
+        <tr><td>Order not found</td><td>404</td><td><code>{ "success": false, "message": "Order not found" }</code></td></tr>
+        <tr><td>Server error</td><td>500</td><td><code>{ "success": false, "message": "Internal error" }</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 8. Card Payments -->
+  <div class="section" id="card-payments">
+    <h2>8. Card Payments (Redirect Flow)</h2>
+    <p>For card payments, the flow is slightly different. After initiating the payment, you <strong>redirect</strong> the customer to KC Pay's hosted payment page where they enter their card details.</p>
+
+    <h3>Step-by-Step</h3>
+    <ol>
+      <li>Call the <strong>Initiate Payment</strong> endpoint with <code>"paymentMethod": "card"</code></li>
+      <li>KC Pay returns a <code>token</code> in the response</li>
+      <li>Construct the payment URL and redirect the customer:</li>
+    </ol>
+
+    <div class="endpoint">
+      <span class="method method-get">GET</span>
+      <code>https://productcheckout.kundananjicreations.com/pay-for-product?transactionToken={token}</code>
+    </div>
+
+    <ol start="4">
+      <li>The customer enters their card details on KC Pay's secure page</li>
+      <li>KC Pay processes the payment and sends a <strong>callback</strong> to your webhook URL</li>
+      <li>The customer is redirected back to your site</li>
+    </ol>
+
+    <h3>Example: Constructing the Redirect URL</h3>
+    <span class="code-label">Node.js</span>
+    <pre>const paymentUrl = `${KCPAY_BASE_URL}/pay-for-product?transactionToken=${token}`;
+// Send this URL to your frontend, which redirects the user
+res.json({ success: true, payment_url: paymentUrl });</pre>
+
+    <span class="code-label">PHP</span>
+    <pre>$paymentUrl = $baseUrl . '/pay-for-product?transactionToken=' . $token;
+header('Location: ' . $paymentUrl);
+exit;</pre>
+  </div>
+
+  <!-- 9. Code Examples -->
+  <div class="section" id="code-examples">
+    <h2>9. Full Code Examples</h2>
+    <p>Here are complete, copy-paste-ready examples for initiating a mobile money payment in popular languages.</p>
+
+    <h3>Node.js (Express)</h3>
+    <span class="code-label">Install</span>
+    <pre>npm install express dotenv</pre>
+
+    <span class="code-label">server.js</span>
+    <pre>const express = require('express');
+require('dotenv').config();
+const app = express();
+app.use(express.json());
+
+const KCPAY_BASE_URL = process.env.KCPAY_BASE_URL;
+const KCPAY_USERNAME = process.env.KCPAY_USERNAME;
+const KCPAY_PASSWORD = process.env.KCPAY_PASSWORD;
+const KCPAY_PRODUCT  = process.env.KCPAY_PRODUCT_REFERENCE;
+
+// ── Initiate a payment ──
+app.post('/api/pay', async (req, res) =&gt; {
+  const { amount, phone, network, customerName, customerEmail } = req.body;
+
+  // Generate a unique reference for this payment
+  const reference = 'ORD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  // Strip leading 0 from phone number
+  const cleanPhone = phone.replace(/^0/, '');
+
+  try {
+    const response = await fetch(KCPAY_BASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apiUserName: KCPAY_USERNAME,
+        apiPassword: KCPAY_PASSWORD,
+        amount: parseFloat(amount),
+        paymentMethod: 'mobilemoney',
+        source: KCPAY_PRODUCT,
+        country: 'zm',
+        currency: 'ZMW',
+        sellerReference: reference,
+        products: [{ productReference: KCPAY_PRODUCT, quantity: 1, amount: parseFloat(amount) }],
+        customerName: customerName || '',
+        customerEmail: customerEmail || '',
+        customerPhoneNumber: cleanPhone,
+        network: network.toLowerCase(),
+        accountNo: cleanPhone,
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'Success') {
+      // TODO: Save reference, token, and order details to your database
+      res.json({ success: true, reference, token: data.token, message: 'Check your phone for the payment prompt' });
+    } else {
+      res.status(400).json({ success: false, message: data.message || 'Payment initiation failed' });
+    }
+  } catch (err) {
+    console.error('KC Pay error:', err);
+    res.status(500).json({ success: false, message: 'Payment gateway error' });
+  }
+});
+
+// ── Check payment status ──
+app.get('/api/pay/status/:reference', async (req, res) =&gt; {
+  try {
+    const response = await fetch(KCPAY_BASE_URL + 'request-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apiUserName: KCPAY_USERNAME,
+        apiPassword: KCPAY_PASSWORD,
+        sellerReference: req.params.reference,
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    const data = await response.json();
+    const status = (data.status || '').toLowerCase();
+
+    if (['success', 'successful'].includes(status)) {
+      // TODO: Mark order as paid in your database
+      res.json({ success: true, status: 'completed' });
+    } else if (['pending', 'processing'].includes(status)) {
+      res.json({ success: true, status: 'pending' });
+    } else {
+      res.json({ success: true, status: 'failed' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Status check failed' });
+  }
+});
+
+// ── Receive KC Pay callback (webhook) ──
+app.post('/api/payments/callback', (req, res) =&gt; {
+  const { status, sellerReference, transactionId, amount } = req.body;
+  console.log('KC Pay callback:', { status, sellerReference, transactionId, amount });
+
+  const paymentStatus = (status || '').toLowerCase();
+
+  if (['success', 'successful'].includes(paymentStatus)) {
+    // TODO: Find order by sellerReference and mark as paid
+    console.log(`Payment ${sellerReference} completed!`);
+  } else {
+    // TODO: Mark order as failed
+    console.log(`Payment ${sellerReference} failed: ${status}`);
+  }
+
+  res.json({ success: true });
+});
+
+app.listen(3000, () =&gt; console.log('Server running on port 3000'));</pre>
+
+    <h3>PHP</h3>
+    <span class="code-label">pay.php</span>
+    <pre>&lt;?php
+// Load credentials (use a proper .env library in production)
+$baseUrl  = 'https://productcheckout.kundananjicreations.com/';
+$username = 'your_api_username';
+$password = 'your_api_password';
+$product  = 'YourProductName';
+
+// Payment details (from your form / frontend)
+$amount    = 50.00;
+$phone     = ltrim($_POST['phone'], '0');  // Strip leading 0
+$network   = strtolower($_POST['network']);
+$reference = 'ORD-' . time() . '-' . strtoupper(substr(md5(rand()), 0, 4));
+
+$payload = json_encode([
+    'apiUserName'         =&gt; $username,
+    'apiPassword'         =&gt; $password,
+    'amount'              =&gt; $amount,
+    'paymentMethod'       =&gt; 'mobilemoney',
+    'source'              =&gt; $product,
+    'country'             =&gt; 'zm',
+    'currency'            =&gt; 'ZMW',
+    'sellerReference'     =&gt; $reference,
+    'products'            =&gt; [['productReference' =&gt; $product, 'quantity' =&gt; 1, 'amount' =&gt; $amount]],
+    'customerPhoneNumber' =&gt; $phone,
+    'network'             =&gt; $network,
+    'accountNo'           =&gt; $phone,
+]);
+
+$ch = curl_init($baseUrl);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+
+if ($data['status'] === 'Success') {
+    // Save $reference and $data['token'] to your database
+    echo json_encode(['success' =&gt; true, 'reference' =&gt; $reference, 'message' =&gt; 'Check your phone']);
+} else {
+    echo json_encode(['success' =&gt; false, 'message' =&gt; $data['message'] ?? 'Payment failed']);
+}
+?&gt;</pre>
+
+    <span class="code-label">callback.php</span>
+    <pre>&lt;?php
+// This file receives the KC Pay webhook
+$body = json_decode(file_get_contents('php://input'), true);
+
+$status    = strtolower($body['status'] ?? '');
+$reference = $body['sellerReference'] ?? '';
+
+if (in_array($status, ['success', 'successful'])) {
+    // TODO: Find order by $reference in your database and mark as paid
+    error_log("Payment $reference completed!");
+} else {
+    // TODO: Mark order as failed
+    error_log("Payment $reference failed: $status");
+}
+
+http_response_code(200);
+echo json_encode(['success' =&gt; true]);
+?&gt;</pre>
+
+    <h3>Python (Flask)</h3>
+    <span class="code-label">Install</span>
+    <pre>pip install flask requests python-dotenv</pre>
+
+    <span class="code-label">app.py</span>
+    <pre>import os, time, random, string, requests
+from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+
+load_dotenv()
+app = Flask(__name__)
+
+BASE_URL = os.getenv('KCPAY_BASE_URL')
+USERNAME = os.getenv('KCPAY_USERNAME')
+PASSWORD = os.getenv('KCPAY_PASSWORD')
+PRODUCT  = os.getenv('KCPAY_PRODUCT_REFERENCE')
+
+@app.route('/api/pay', methods=['POST'])
+def initiate_payment():
+    data = request.json
+    phone = data['phone'].lstrip('0')
+    ref = f"ORD-{int(time.time())}-{''.join(random.choices(string.ascii_uppercase, k=4))}"
+
+    payload = {
+        'apiUserName': USERNAME,
+        'apiPassword': PASSWORD,
+        'amount': float(data['amount']),
+        'paymentMethod': 'mobilemoney',
+        'source': PRODUCT,
+        'country': 'zm',
+        'currency': 'ZMW',
+        'sellerReference': ref,
+        'products': [{'productReference': PRODUCT, 'quantity': 1, 'amount': float(data['amount'])}],
+        'customerPhoneNumber': phone,
+        'network': data['network'].lower(),
+        'accountNo': phone,
+    }
+
+    resp = requests.post(BASE_URL, json=payload, timeout=30)
+    result = resp.json()
+
+    if result.get('status') == 'Success':
+        # TODO: Save ref and token to your database
+        return jsonify(success=True, reference=ref, token=result.get('token'))
+    return jsonify(success=False, message=result.get('message', 'Failed')), 400
+
+@app.route('/api/payments/callback', methods=['POST'])
+def callback():
+    body = request.json
+    status = (body.get('status') or '').lower()
+    ref = body.get('sellerReference', '')
+
+    if status in ('success', 'successful'):
+        # TODO: Mark order as paid
+        print(f'Payment {ref} completed!')
+    else:
+        print(f'Payment {ref} failed: {status}')
+
+    return jsonify(success=True)
+
+if __name__ == '__main__':
+    app.run(port=3000)</pre>
+  </div>
+
+  <!-- 10. Error Handling -->
+  <div class="section" id="error-handling">
+    <h2>10. Error Handling</h2>
+
+    <h3>Recommended Timeout</h3>
+    <p>Set a <strong>30-second timeout</strong> on all requests to KC Pay. If the gateway doesn't respond in time, fail gracefully and let the customer retry.</p>
+
+    <h3>Common Errors & Solutions</h3>
+    <table>
+      <thead><tr><th>Error</th><th>Cause</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td>Invalid credentials</td><td>Wrong API username or password</td><td>Double-check credentials in your .env / dashboard</td></tr>
+        <tr><td>Transaction not found</td><td>Status check too early after initiation</td><td>Wait a few seconds and retry — the transaction may still be propagating</td></tr>
+        <tr><td>Request timeout</td><td>KC Pay server is slow or down</td><td>Retry after a short delay; show a friendly error to the user</td></tr>
+        <tr><td>Callback not received</td><td>Firewall blocking, incorrect URL, or server down</td><td>Ensure your callback URL is publicly accessible; use polling as a fallback</td></tr>
+        <tr><td>Phone prompt not received</td><td>Wrong phone number or network mismatch</td><td>Verify the phone number and network are correct; ensure leading 0 is stripped</td></tr>
+        <tr><td>Duplicate sellerReference</td><td>Same reference used for two payments</td><td>Always generate a unique reference per transaction</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box note">
+      <strong>&#8505; Best Practice</strong>
+      Always implement <strong>both</strong> the webhook callback and status polling. The webhook is faster and more reliable, but polling ensures you don't miss a payment if the webhook fails to deliver.
+    </div>
+  </div>
+
+  <!-- 11. Testing -->
+  <div class="section" id="testing">
+    <h2>11. Testing & Troubleshooting</h2>
+
+    <h3>Test Mode</h3>
+    <p>Set <code>mode</code> to <code>"test"</code> in your API requests (or set <code>KCPAY_MODE=test</code> in your .env). Test transactions will not charge real money.</p>
+
+    <h3>Quick Test with cURL</h3>
+    <span class="code-label">Initiate Payment</span>
+    <pre>curl -X POST https://productcheckout.kundananjicreations.com/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "apiUserName": "your_username",
+    "apiPassword": "your_password",
+    "amount": 1.00,
+    "paymentMethod": "mobilemoney",
+    "source": "YourProductName",
+    "country": "zm",
+    "currency": "ZMW",
+    "sellerReference": "TEST-001",
+    "products": [{"productReference": "YourProductName", "quantity": 1, "amount": 1.00}],
+    "customerPhoneNumber": "971234567",
+    "network": "mtn",
+    "accountNo": "971234567",
+    "mode": "test"
+  }'</pre>
+
+    <span class="code-label">Check Status</span>
+    <pre>curl -X POST https://productcheckout.kundananjicreations.com/request-status \
+  -H "Content-Type: application/json" \
+  -d '{
+    "apiUserName": "your_username",
+    "apiPassword": "your_password",
+    "sellerReference": "TEST-001"
+  }'</pre>
+
+    <h3>Troubleshooting Checklist</h3>
+    <ol>
+      <li>&#9989; API credentials are correct (check KC Pay dashboard)</li>
+      <li>&#9989; Base URL ends with <code>/</code> &mdash; <code>https://productcheckout.kundananjicreations.com/</code></li>
+      <li>&#9989; Phone numbers have no leading <code>0</code></li>
+      <li>&#9989; <code>network</code> is lowercase: <code>"mtn"</code>, <code>"airtel"</code>, or <code>"zamtel"</code></li>
+      <li>&#9989; <code>sellerReference</code> is unique for every transaction</li>
+      <li>&#9989; Callback URL is publicly accessible (test with <code>curl</code> from an external machine)</li>
+      <li>&#9989; For card payments, public and private keys are configured</li>
+      <li>&#9989; Your server responds with HTTP <code>200</code> to callbacks</li>
+    </ol>
+  </div>
+
+  <!-- 12. Quick Reference -->
+  <div class="section" id="reference">
+    <h2>12. Quick Reference</h2>
+
+    <h3>KC Pay API Endpoints</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Method</th><th>URL</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Initiate Payment</td>
+          <td><span class="method method-post">POST</span></td>
+          <td><code>https://productcheckout.kundananjicreations.com/</code></td>
+        </tr>
+        <tr>
+          <td>Check Status</td>
+          <td><span class="method method-post">POST</span></td>
+          <td><code>https://productcheckout.kundananjicreations.com/request-status</code></td>
+        </tr>
+        <tr>
+          <td>Card Payment Page</td>
+          <td><span class="method method-get">GET</span></td>
+          <td><code>https://productcheckout.kundananjicreations.com/pay-for-product?transactionToken={token}</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Supported Networks</h3>
+    <table>
+      <thead><tr><th>Network</th><th>Value</th><th>Phone Prefix</th></tr></thead>
+      <tbody>
+        <tr><td>MTN</td><td><code>"mtn"</code></td><td>096, 076</td></tr>
+        <tr><td>Airtel</td><td><code>"airtel"</code></td><td>097, 077</td></tr>
+        <tr><td>Zamtel</td><td><code>"zamtel"</code></td><td>095, 075</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Payment Status Values</h3>
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="status status-success">Success / Successful</span></td><td>Payment completed successfully</td></tr>
+        <tr><td><span class="status status-warn">Pending / Processing</span></td><td>Waiting for customer to approve</td></tr>
+        <tr><td><span class="status status-error">Failed</span></td><td>Payment was rejected or failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p><strong>KC Pay</strong> — Developer Integration Guide</p>
+  <p style="margin-top: 6px;">Create your account at <a href="https://kundananjicreations.com/pages/member_login" target="_blank">kundananjicreations.com</a> &middot; Built by <a href="#">Kundanji Creations</a> &middot; Last updated: February 2026</p>
+</div>
+
+</body>
+</html>

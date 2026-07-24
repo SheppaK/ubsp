@@ -29,7 +29,7 @@ use App\Http\Controllers\Modules\UniversitySocialController;
 use App\Http\Controllers\Modules\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->prefix('modules')->group(function () {
+Route::middleware(['auth', 'verified', 'business.paid'])->prefix('modules')->group(function () {
     Route::middleware('module.enabled:electronics-tracker')
         ->prefix('electronics-tracker')
         ->name('modules.electronics-tracker.')

@@ -68,6 +68,20 @@ class UbspSeeder extends Seeder
 
         Role::findByName('customer')->givePermissionTo(['clinic.access']);
 
+        $defaultPrices = [
+            'boarding-house' => 500.00,
+            'clinic' => 750.00,
+            'marketplace' => 400.00,
+            'electronics-tracker' => 350.00,
+            'university-social' => 300.00,
+            'balanced-scorecard' => 450.00,
+            'exchange-tracker' => 250.00,
+            'weather' => 200.00,
+            'monitoring-evaluation' => 500.00,
+            'subscription-sharing' => 300.00,
+            'sports-league' => 350.00,
+        ];
+
         foreach (config('ubsp.modules') as $slug => $module) {
             PlatformModule::updateOrCreate(
                 ['slug' => $slug],
@@ -78,6 +92,7 @@ class UbspSeeder extends Seeder
                     'color' => $module['color'],
                     'is_enabled' => true,
                     'sort_order' => array_search($slug, array_keys(config('ubsp.modules'))) + 1,
+                    'price_zmw' => $defaultPrices[$slug] ?? 250.00,
                 ]
             );
         }

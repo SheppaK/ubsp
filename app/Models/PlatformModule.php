@@ -14,12 +14,14 @@ class PlatformModule extends Model
         'color',
         'is_enabled',
         'sort_order',
+        'price_zmw',
     ];
 
     protected function casts(): array
     {
         return [
             'is_enabled' => 'boolean',
+            'price_zmw' => 'decimal:2',
         ];
     }
 }

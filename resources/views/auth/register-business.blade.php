@@ -48,20 +48,46 @@
             </div>
         </div>
 
-        <div>
+        <div x-data="{
+            prices: @js($modulePrices->map(fn ($p) => (float) $p)),
+            selected: @js(old('modules', ['boarding-house'])),
+            toggle(slug) {
+                const i = this.selected.indexOf(slug);
+                if (i >= 0) this.selected.splice(i, 1);
+                else this.selected.push(slug);
+            },
+            total() {
+                return this.selected.reduce((sum, slug) => sum + (this.prices[slug] || 0), 0);
+            }
+        }">
             <x-input-label :value="__('Select Modules')" />
-            <p class="font-sans text-xs text-brand-indigo/50 mb-3">Choose at least one module. You can manage users and data within each module.</p>
+            <p class="font-sans text-xs text-brand-indigo/50 mb-3">Choose at least one module. Prices are in Zambian Kwacha (ZMW).</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @foreach($modules as $slug => $mod)
+                    @php $price = (float) ($modulePrices[$slug] ?? 0); @endphp
                     <label class="flex items-start gap-3 p-4 rounded-2xl border border-brand-lavender/40 hover:border-brand-coral/50 cursor-pointer transition">
                         <input type="checkbox" name="modules[]" value="{{ $slug }}" class="mt-1 rounded border-brand-lavender text-brand-coral focus:ring-brand-coral"
+                            @change="toggle('{{ $slug }}')"
                             {{ in_array($slug, old('modules', ['boarding-house'])) ? 'checked' : '' }}>
-                        <span>
-                            <span class="font-heading font-semibold text-brand-indigo block">{{ $mod['name'] }}</span>
-                            <span class="font-sans text-xs text-brand-indigo/60">{{ $mod['description'] }}</span>
+                        <span class="flex-1">
+                            <span class="flex items-center justify-between gap-2">
+                                <span class="font-heading font-semibold text-brand-indigo">{{ $mod['name'] }}</span>
+                                <span class="font-sans text-sm font-medium text-brand-coral shrink-0">
+                                    @if($price > 0)
+                                        K {{ number_format($price, 2) }}
+                                    @else
+                                        Free
+                                    @endif
+                                </span>
+                            </span>
+                            <span class="font-sans text-xs text-brand-indigo/60 block mt-1">{{ $mod['description'] }}</span>
                         </span>
                     </label>
                 @endforeach
+            </div>
+            <div class="mt-4 p-4 rounded-2xl bg-brand-lavender/20 flex justify-between items-center">
+                <span class="font-heading font-semibold text-brand-indigo">Estimated total</span>
+                <span class="font-heading text-lg font-bold text-brand-coral" x-text="'K ' + total().toFixed(2) + ' ZMW'"></span>
             </div>
             <x-input-error :messages="$errors->get('modules')" class="mt-2" />
         </div>
@@ -70,7 +96,7 @@
             <a class="text-sm font-sans text-brand-indigo/70 hover:text-brand-coral transition" href="{{ route('login') }}">
                 {{ __('Already have an account?') }}
             </a>
-            <x-primary-button>{{ __('Create Business Account') }}</x-primary-button>
+            <x-primary-button>{{ __('Continue to Payment') }}</x-primary-button>
         </div>
     </form>
 </x-guest-layout>

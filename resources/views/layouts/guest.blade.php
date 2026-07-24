@@ -21,9 +21,10 @@
                 <span class="font-heading font-bold text-xl text-brand-indigo">{{ config('ubsp.short_name') }}</span>
             </a>
 
-            <div class="hero-animate w-full sm:max-w-md surface-card p-8 sm:p-10">
+            <div class="hero-animate w-full sm:max-w-lg surface-card p-8 sm:p-10">
                 {{ $slot }}
             </div>
         </div>
+        @stack('scripts')
     </body>
 </html>

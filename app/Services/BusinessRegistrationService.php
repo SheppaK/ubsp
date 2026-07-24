@@ -21,12 +21,14 @@ class BusinessRegistrationService
     ) {}
 
     /**
+     * Create the owner account and business without unlocking modules.
+     *
      * @param  array<string, mixed>  $data
      * @param  list<string>  $moduleSlugs
      */
-    public function register(array $data, array $moduleSlugs): Business
+    public function registerUnpaid(array $data, array $moduleSlugs = []): Business
     {
-        return DB::transaction(function () use ($data, $moduleSlugs) {
+        return DB::transaction(function () use ($data) {
             $user = User::create([
                 'name' => $data['owner_name'],
                 'email' => $data['email'],
@@ -44,6 +46,7 @@ class BusinessRegistrationService
                 'phone' => $data['phone'] ?? null,
                 'address' => $data['address'] ?? null,
                 'status' => 'active',
+                'payment_status' => 'unpaid',
             ]);
 
             BusinessUser::create([
@@ -52,7 +55,20 @@ class BusinessRegistrationService
                 'role' => 'owner',
             ]);
 
-            $this->activateModules($business, $moduleSlugs, $user);
+            return $business->load('owner');
+        });
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $moduleSlugs
+     */
+    public function register(array $data, array $moduleSlugs): Business
+    {
+        return DB::transaction(function () use ($data, $moduleSlugs) {
+            $business = $this->registerUnpaid($data, $moduleSlugs);
+            $this->activateModules($business, $moduleSlugs, $business->owner);
+            $business->markPaid();
 
             return $business->load('modules');
         });
@@ -114,8 +130,9 @@ class BusinessRegistrationService
 
     /**
      * @param  array<string, mixed>  $data
+     * @return array{tenant: User, email_sent: bool, plain_password: string}
      */
-    public function createTenantAccount(Business $business, User $inviter, array $data): User
+    public function createTenantAccount(Business $business, User $inviter, array $data): array
     {
         $plainPassword = Str::password(12);
 
@@ -138,16 +155,19 @@ class BusinessRegistrationService
             'invited_by' => $inviter->id,
         ]);
 
+        $emailSent = false;
         try {
             $this->sendTenantCredentials($tenant, $plainPassword, $business);
-            session()->flash('email_sent', true);
+            $emailSent = true;
         } catch (\Throwable $e) {
             report($e);
-            session()->flash('email_sent', false);
-            session()->flash('temp_password', $plainPassword);
         }
 
-        return $tenant;
+        return [
+            'tenant' => $tenant,
+            'email_sent' => $emailSent,
+            'plain_password' => $plainPassword,
+        ];
     }
 
     protected function sendTenantCredentials(User $tenant, string $plainPassword, Business $business): void

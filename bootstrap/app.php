@@ -19,10 +19,18 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Hostinger / reverse proxy: correct HTTPS URLs and secure cookies
+        $middleware->trustProxies(at: '*');
+
+        $middleware->validateCsrfTokens(except: [
+            'api/kcpay/callback',
+        ]);
+
         $middleware->alias([
             'module.enabled' => \App\Http\Middleware\EnsureModuleEnabled::class,
             'boarding-house.manager' => \App\Http\Middleware\EnsureBoardingHouseManager::class,
             'clinic.provider' => \App\Http\Middleware\EnsureClinicProvider::class,
+            'business.paid' => \App\Http\Middleware\EnsureBusinessPaid::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,

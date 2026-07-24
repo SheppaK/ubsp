@@ -18,11 +18,32 @@ class Business extends Model
         'phone',
         'address',
         'status',
+        'payment_status',
     ];
 
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function registrationPayments(): HasMany
+    {
+        return $this->hasMany(RegistrationPayment::class);
+    }
+
+    public function hasPaid(): bool
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function markPaid(): void
+    {
+        $this->update(['payment_status' => 'paid']);
+    }
+
+    public function markUnpaid(): void
+    {
+        $this->update(['payment_status' => 'unpaid']);
     }
 
     public function modules(): HasMany

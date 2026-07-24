@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Business;
+use App\Services\KcpayService;
 use App\Services\ModuleManager;
+use App\Services\RegistrationPaymentService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BusinessDashboardController extends Controller
 {
-    public function __construct(protected ModuleManager $modules) {}
+    public function __construct(
+        protected ModuleManager $modules,
+        protected RegistrationPaymentService $payments,
+        protected KcpayService $kcpay,
+    ) {}
 
     public function dashboard(Request $request): View
     {
@@ -26,6 +33,34 @@ class BusinessDashboardController extends Controller
             'business' => $business,
             'modules' => $businessModules,
             'memberCount' => $business->members()->count(),
+        ]);
+    }
+
+    public function payment(Request $request): View|RedirectResponse
+    {
+        $user = $request->user();
+        $business = $user->ownedBusiness;
+
+        abort_unless($business, 404, 'No business found for your account.');
+
+        if ($business->hasPaid()) {
+            return redirect()
+                ->route('platform.business.dashboard')
+                ->with('success', 'Your modules are already unlocked.');
+        }
+
+        $payment = $this->payments->pendingPaymentForBusiness($business);
+
+        abort_unless($payment, 404, 'No pending payment found. Please contact support.');
+
+        $pricedModules = $this->kcpay->pricedModules($payment->modules ?? []);
+
+        return view('platform.business.payment', [
+            'business' => $business,
+            'payment' => $payment,
+            'pricedModules' => $pricedModules,
+            'kcpayReady' => $this->kcpay->isReady(),
+            'simulating' => (bool) $this->kcpay->settings()?->shouldSimulateLocally(),
         ]);
     }
 
