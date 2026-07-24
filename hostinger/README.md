@@ -37,6 +37,18 @@ npm run build
 
 Upload `public/build/` — it is required in production (no Vite dev server on Hostinger).
 
+**Important:** `public/build/` is not in git. After every `npm run build`, upload this folder:
+
+```
+public/build/
+├── manifest.json
+└── assets/
+    ├── app-XXXXX.css
+    └── app-XXXXX.js
+```
+
+Use File Manager or FTP: upload into `public_html/public/build/` on the server.
+
 ## Server setup
 
 1. **PHP version:** 8.2 or 8.3 in hPanel → Advanced → PHP Configuration.
@@ -101,6 +113,51 @@ If you moved everything from `public/` into `public_html/` root:
 2. Replace `public_html/.htaccess` with `hostinger/public_html.htaccess`
 3. Copy `hostinger/.user.ini` to `public_html/.user.ini`
 
+## Error: Table 'cache' doesn't exist
+
+Migrations have not been run yet. Fix with **one** of these:
+
+### A — SSH / hPanel Terminal (recommended)
+
+```bash
+cd ~/domains/yourdomain.com/public_html
+php artisan migrate --force
+php artisan db:seed --force   # optional: demo admin user
+php artisan config:cache
+```
+
+### B — Quick env workaround (no migrate yet)
+
+In server `.env` set:
+
+```env
+CACHE_STORE=file
+```
+
+Then run `php artisan config:clear` or delete `bootstrap/cache/config.php`.
+
+### C — phpMyAdmin only
+
+Import `hostinger/quick-fix-cache.sql` into your database, then still run full migrate when possible.
+
+## Deployment panel (super-admin)
+
+After deploy, log in as **super-admin** and open **Deployment** in the sidebar (`/admin/deployment`):
+
+- **Git pull** — requires a git clone on the server and shell functions enabled
+- **Run migrations**, clear/cache config, routes, views
+- **Link storage** — works without PHP `exec()`
+
+Set in `.env`:
+
+```env
+DEPLOY_ENABLED=true
+DEPLOY_GIT_ENABLED=true
+DEPLOY_GIT_BRANCH=main
+```
+
+Set `DEPLOY_ENABLED=false` to hide the panel entirely.
+
 ## Health check
 
 Visit `https://yourdomain.com/up` — should return `{"status":"ok"}`.
@@ -110,7 +167,9 @@ Visit `https://yourdomain.com/up` — should return `{"status":"ok"}`.
 | Issue | Fix |
 |-------|-----|
 | 500 error | Check `storage/logs/laravel.log`; ensure `storage/` writable |
-| Blank page / no CSS | Run `npm run build` locally and upload `public/build/` |
+| Blank page / no CSS | Upload `public/build/` (run `npm run build` locally first) |
+| Vite manifest not found | Same — upload entire `public/build/` folder to `public_html/public/build/` |
+| storage:link exec() error | Run: `ln -sf ../storage/app/public public/storage` in SSH |
 | `.env` not loading | File must be in project root (same folder as `artisan`) |
 | Session / login loops | Set `APP_URL` to exact HTTPS domain; clear config cache |
 | Mixed content | `APP_URL` must use `https://` |

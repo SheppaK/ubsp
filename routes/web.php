@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\BusinessRegistrationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\BusinessDashboardController;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\EmailSettingsController;
 use App\Http\Controllers\KcpayCallbackController;
 use App\Http\Controllers\KcpaySettingsController;
@@ -46,6 +47,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [BusinessDashboardController::class, 'dashboard'])->name('dashboard');
             Route::get('/users', [BusinessDashboardController::class, 'users'])->name('users');
         });
+    });
+
+    Route::middleware('role:super-admin')->group(function () {
+        Route::get('/admin/deployment', [DeploymentController::class, 'index'])->name('platform.deployment');
+        Route::post('/admin/deployment/artisan', [DeploymentController::class, 'artisan'])->name('platform.deployment.artisan');
+        Route::post('/admin/deployment/git-pull', [DeploymentController::class, 'gitPull'])->name('platform.deployment.git-pull');
+        Route::post('/admin/deployment/git-status', [DeploymentController::class, 'refreshGitStatus'])->name('platform.deployment.git-status');
+        Route::post('/admin/deployment/storage-link', [DeploymentController::class, 'linkStorage'])->name('platform.deployment.storage-link');
     });
 
     Route::middleware('role:super-admin|administrator')->group(function () {
