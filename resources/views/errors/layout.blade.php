@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('ubsp.short_name', 'UBSP') }} — @yield('code') @yield('title')</title>
+    <title>{{ $siteBrand->shortName() }} — @yield('code') @yield('title')</title>
     <x-brand-fonts />
+    @include('partials.site-head')
     @vite(['resources/css/app.css'])
     @include('partials.theme-variables')
 </head>
 <body class="surface-page min-h-screen flex items-center justify-center p-6">
     <div class="max-w-lg w-full text-center space-y-6">
-        <a href="{{ route('home') }}" class="inline-flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-brand-coral flex items-center justify-center text-white font-heading font-bold text-lg">U</div>
-            <span class="font-heading font-bold text-xl text-heading">{{ config('ubsp.short_name') }}</span>
+        <a href="{{ route('home') }}" class="inline-flex mb-4">
+            <x-site-logo />
         </a>
 
         <div class="bento-card p-10 space-y-4">

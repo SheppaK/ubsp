@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('ubsp.short_name', 'UBSP') }} — @yield('title', 'Dashboard')</title>
+    <title>{{ $siteBrand->shortName() }} — @yield('title', 'Dashboard')</title>
     <x-brand-fonts />
+    @include('partials.site-head')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('partials.theme-variables')
     @stack('head')
@@ -16,9 +17,14 @@
         {{-- Sidebar --}}
         <aside data-animate="sidebar" :class="sidebarOpen ? 'w-64' : 'w-20'" class="fixed inset-y-0 left-0 z-40 surface-sidebar transition-all duration-300 flex flex-col">
             <div class="flex items-center gap-3 px-4 h-16 border-b border-white/10">
-                <div class="w-10 h-10 rounded-2xl bg-brand-coral flex items-center justify-center text-white font-heading font-bold text-sm shrink-0">U</div>
+                <x-site-logo
+                    :show-name="false"
+                    logo-class="w-10 h-10 rounded-2xl object-cover shrink-0"
+                    fallback-class="w-10 h-10 rounded-2xl bg-brand-coral flex items-center justify-center text-white font-heading font-bold text-sm shrink-0"
+                    stack-class="flex items-center gap-3 shrink-0"
+                />
                 <div x-show="sidebarOpen" x-transition class="overflow-hidden">
-                    <p class="font-heading font-bold text-sm truncate text-white">{{ config('ubsp.short_name') }}</p>
+                    <p class="font-heading font-bold text-sm truncate text-white">{{ $siteBrand->shortName() }}</p>
                     <p class="text-xs text-brand-lavender truncate font-sans">Business Platform</p>
                 </div>
             </div>
@@ -58,6 +64,10 @@
                     <a href="{{ route('platform.theme-settings') }}" class="sidebar-link {{ request()->routeIs('platform.theme-settings*') ? 'sidebar-link-active' : 'sidebar-link-inactive' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                         <span x-show="sidebarOpen">Theme Colors</span>
+                    </a>
+                    <a href="{{ route('platform.site-media') }}" class="sidebar-link {{ request()->routeIs('platform.site-media*') ? 'sidebar-link-active' : 'sidebar-link-inactive' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span x-show="sidebarOpen">Site Media</span>
                     </a>
                     <a href="{{ route('platform.email-settings') }}" class="sidebar-link {{ request()->routeIs('platform.email-settings*') ? 'sidebar-link-active' : 'sidebar-link-inactive' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>

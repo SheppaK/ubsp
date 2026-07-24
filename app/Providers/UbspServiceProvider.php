@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\ModuleManager;
 use App\Services\PhpMailerService;
+use App\Services\SiteBrandingService;
 use App\Services\ThemeService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -15,6 +16,7 @@ class UbspServiceProvider extends ServiceProvider
         $this->app->singleton(ModuleManager::class);
         $this->app->singleton(PhpMailerService::class);
         $this->app->singleton(ThemeService::class);
+        $this->app->singleton(SiteBrandingService::class);
     }
 
     public function boot(): void
@@ -27,6 +29,7 @@ class UbspServiceProvider extends ServiceProvider
 
         View::composer(['layouts.platform', 'layouts.guest', 'welcome', 'errors.layout'], function ($view) {
             $view->with('themeCssVars', app(ThemeService::class)->cssVariableString());
+            $view->with('siteBrand', app(SiteBrandingService::class));
         });
 
         View::composer('layouts.platform', function ($view) {

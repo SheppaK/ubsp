@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('ubsp.short_name') }} — Universal Business Systems Platform</title>
+    <title>{{ $siteBrand->shortName() }} — {{ $siteBrand->name() }}</title>
     <x-brand-fonts />
+    @include('partials.site-head')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('partials.theme-variables')
 </head>
@@ -19,8 +20,7 @@
         <header class="surface-header sticky top-0 z-50 hero-animate">
             <div class="max-w-7xl mx-auto px-6 h-18 py-4 flex items-center justify-between">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-brand-coral flex items-center justify-center text-white font-heading font-bold text-lg">U</div>
-                    <span class="font-heading font-bold text-xl text-brand-indigo">{{ config('ubsp.short_name') }}</span>
+                    <x-site-logo />
                 </a>
                 <nav class="flex items-center gap-3">
                     @auth
@@ -45,7 +45,7 @@
                             Grow your business with smart digital solutions.
                         </h1>
                         <p class="hero-animate text-lg font-sans text-brand-indigo/70 max-w-lg">
-                            {{ config('ubsp.name') }} — one login, eleven powerful business systems. Clinic, marketplace, university social, sports league, and more.
+                            {{ $siteBrand->tagline() ?: ($siteBrand->name().' — one login, eleven powerful business systems. Clinic, marketplace, university social, sports league, and more.') }}
                         </p>
                         <div class="hero-animate flex flex-wrap gap-4">
                             <a href="{{ route('register') }}" class="btn-primary">Start Free</a>
@@ -106,14 +106,14 @@
             <section class="max-w-7xl mx-auto px-6 py-24">
                 <div class="bento-card-dark text-center p-12 lg:p-16 stagger-item">
                     <h2 class="font-heading text-3xl lg:text-4xl font-bold mb-4">Ready to unify your business systems?</h2>
-                    <p class="font-sans text-brand-lavender mb-8 max-w-xl mx-auto">Join UBSP today and give your team one place to work, collaborate, and grow.</p>
+                    <p class="font-sans text-brand-lavender mb-8 max-w-xl mx-auto">Join {{ $siteBrand->shortName() }} today and give your team one place to work, collaborate, and grow.</p>
                     <a href="{{ route('register') }}" class="btn-primary inline-flex">Create Free Account</a>
                 </div>
             </section>
         </main>
 
         <footer class="surface-header py-8 text-center">
-            <p class="text-sm font-sans text-brand-indigo/60">&copy; {{ date('Y') }} {{ config('ubsp.short_name') }}. Built with Laravel & MySQL.</p>
+            <p class="text-sm font-sans text-brand-indigo/60">&copy; {{ date('Y') }} {{ $siteBrand->shortName() }}. Built with Laravel & MySQL.</p>
         </footer>
     </div>
 </body>
